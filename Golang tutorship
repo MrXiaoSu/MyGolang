@@ -1,0 +1,151 @@
+go语言基础知识点
+go语言反对函数和操作符重载（overload）
+go语言支持类，类成员方法，类的组合————但是反对继承，反对虚函数，和虚函数重载
+go语言放弃构造函数和析构函数。
+go的特点，接受接口，go语言实现类的时候无需从接口派生，只要实现的接口定义就表示实现了该接口
+
+go关键字：
+
+
+
+C语言结构体的定义：举例
+struct关键字
+
+
+
+
+go语言指针：
+
+package main
+
+
+iota的用法：
+import "fmt"
+func main() {
+    const (
+            a = iota   //0
+            b          //1
+            c          //2
+            d = "ha"   //独立值，iota += 1
+            e          //"ha"   iota += 1
+            f = 100    //iota +=1
+            g          //100  iota +=1
+            h = iota   //7,恢复计数
+            i          //8
+    )
+    fmt.Println(a,b,c,d,e,f,g,h,i)
+}
+输出值：0 1 2 ha ha 100 100 7 8
+
+go语言函数的用法：
+函数的调用
+
+函数返回多个值：
+
+
+--------------------------------------------------------------------------------
+线程：线程是进程的一个实体，作为系统调度和分派的基本单位。Linux下的线程看做轻量级进程。
+线程是进程内的一个相对独立的可执行的单元。线程和进程的关系：进程是任务，线程是子任务
+进程：一个进程包括由操作系统分配的内存空间，包含一个或者多个线程。（进程的状态：就绪、执行和等待状态）
+一个线程不能独立存在，它必须是进程的一部分。一个进程一直运行，知道所有的非守护线程都结束运行才能结束。
+
+并发与并行
+并发：指两种或者两种以上的行为同时存在。（非同一时刻）
+Go中的使用：go语句开启一个新的goroutine，就是典型的并发。不同的goroutines在程序运行期间肯能同时存在着。
+在单核CPU系统中，goroutines的运转是依赖cpu的时间片轮转算法的，即为交替执行。并发的原因是操作系统具备了同时处理多种行为的能力。
+
+并行：多个动作在同一时刻同时执行。
+在多核CPU的前提下，go可以为goroutines指定运算需要的处理器数量。
+
+协程：一个程序包含多个协程，类比于进程与线程，协程执行过程类似于子例程，（称之为不带返回值的函数调用）。
+
+多线程：一个时间段内可以执行多个线程
+通道：多线程之间传递数据	传数据用channel <- data，取数据用<-channel
+线程安全：在拥有数据共享的多条线程并执行的程序中，线程安全的代码会通过同步机制保证各个线程都可以正常且正确的执行，不会出现数据污染等意外情况。
+线程安全问题都是由全局变量以及静态变量引起的。
+
+在golang中，使用go关键字，后面跟上一个函数就可以创建有一个线程，后面的这个函数可以使已经声明好的函数，也可以是一个匿名函数。
+例1：声明函数
+func	getInfo(name string,age int){
+fmt.Print("name:%s,age:$%d \n",name,age)
+}
+
+func	main(){
+go getInfo("li",12)
+go getInfo("sun",45)
+fmt.Println("start")
+time.Slee (1*lel0 )
+
+}
+输出：
+start
+name: li,age: 12
+name: sun,age: 45
+
+例2：匿名函数
+import(
+    "fmt"
+    "time"    
+)
+funcmain(){
+    var i = 3
+    go func(a int) {
+        fmt.Println(a)
+        fmt.Println("1")
+    }(i)
+    fmt.Println("2")
+    time.Sleep(1 * time.Second)
+
+}
+
+
+通道：channel的作用就是在多线程之间传递数据
+
+
+创建无缓冲channel
+chreadandwrite :=make(chan int)
+chonlyread := make(<-chan int)  //创建只读channel
+chonlywrite := make(chan<- int) //创建只写channel
+ch :=make(chan int)     
+    ch <- 1
+
+     go func() {
+        	<-ch
+        	fmt.Println("1")
+      }()
+      fmt.Println("2")  
+
+这段代码执行时会出现一个错误：fatal error: all goroutines are asleep - deadlock!
+
+错误原因：线程陷入死锁，程序无法继续往下执行。
+1、创建了一个无缓冲的channel，然后给channel赋值了，程序就是在赋值后陷入死锁。因为channel是没有缓冲的，即是同步的，赋值完成后来不及读取channel值就已经阻塞了。
+2、channel的机制是先进先出，go要求如何给channel赋值就必须读取它的值，不然就会造成阻塞（针对无缓冲的channel）
+3、解决办法，给channel增加缓冲区，将接收channel放到子程序代码下面（赋值后移）
+方法一：
+ch :=make(chan int,1)
+ch <- 1
+go func() {
+       		v := <-ch
+       		fmt.Println(v)
+    	}()
+    	time.Sleep(1 * time.Second)
+    	fmt.Println("2")
+方法二：
+ch :=make(chan int)
+   	go func() {
+        	v := <-ch
+        	fmt.Println(v)
+    	}()
+    	ch <- 1
+    	fmt.Println("2")
+--------------------------------------------------------------------------------
+基本问题：
+1、包的导入：单独导入，避免重名与长名使用起别名
+2、默认值类型：3.14	float64，
+3、var myMap map[string]string // 字典声名，声明的map是空值，需要用make()创建
+	myMap = make(map[string]string)
+
+4、可见性规则：函数首字母小写即为private，首字母大写即为public
+5、go变量和运算符之间必须有空格
+
+
