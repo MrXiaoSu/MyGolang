@@ -1,0 +1,129 @@
+If语句
+{	
+写法：
+var variable int = 10
+if variable>10{
+     fmt.Println("大于10")
+}else{
+     fmt.Println("小于等于10")
+}
+特殊写法：
+/*Connect()是带返回值的函数;
+执行完err:=connect()后将错误保存到err中;
+err!=nil才是真正的判断表达式。
+优势：将返回值和判断放在一起进行处理;
+返回值的作用范围被限制在if-else语句中*/
+if err:=connect();err!=nil{
+    fmt.Println(err)
+    return
+}
+}
+--------------------------------------------------------------------------------
+for循环
+{
+for i:=0;i<100;i++{
+    。。。
+}
+}
+
+for range 键值循环——直接获取对象的索引和数据
+{
+Go语言使用for range遍历数组，切片，字符串，map及channel
+数组，切片，字符串返回索引和值
+map返回键和值
+通道只返回channel内的值
+遍历数组、切片、字符串：
+//遍历数组
+for key,value := range [] int{1,2,3,4}{
+        fmt.Printf("key:%d value:%d\n",key,value)
+    }
+//遍历切片
+//声明切片，添加元素，遍历切片
+case_slice := make([] int ,2,10)
+case_slice = append(case_slice,1,3,4,34,5,6,7,7,6,5)
+for key1,value1 := range case_slice{
+    fmt.Printf("key:%d value:%d\n",key1,value1)
+}
+//遍历字符串
+var str = "hello 你好 go"
+for key,value := range str{
+fmt.Printf("key:%d value:%d\n",key,value)
+} 
+遍历map：
+scene := make(map[string] int )
+    scene["route"] = 1
+    scene["black"] = 2
+    scene["red"] = 3
+    //循环遍历map
+    for key,value := range scene{
+        fmt.Println(key,value)
+    }   
+
+map还有一种在声明时填充内容的方式
+//左边是键值，右边是值
+scene1 := map[string]string{
+        "W":"forward",
+        "A":"left",
+        "S":"right",
+        "D":"backward",
+    }
+    
+    for key1,value1 := range scene1{
+        fmt.Println(key1,value1)
+    }
+遍历channnel：for range可以遍历通道（channel），在遍历通道时只输出一个值，即管道内的类型对应的数据
+chan1 := make(chan int) //创建一个整型的通道
+    	go func() {             //启动goroutine，往通道中传送数据，结束后马上关闭通道
+        	chan1 <- 1
+        	chan1 <- 2
+        	chan1 <- 3
+        	close(chan1)
+    	}()
+    	for value := range chan1 { //对通道进行遍历，不断从通道中取数，直到通道关闭
+       	 	fmt.Println(value)
+    	}
+}
+--------------------------------------------------------------------------------
+switch——分支选择：switch中case与case之间是独立的，不需要break语句跳出当前case
+{
+语法：
+var a = "hello"
+switch a{
+    case "hello":
+        fmt.Println(1)
+    case "world":
+        fmt.Println(2)
+    case default:
+        fmt.Println(0)
+    
+}
+一分支多值：
+case "hello","go":
+        fmt.Println(1)
+分支是表达式：
+var r int = 15
+switch r{
+    case r>10&&r<20:
+    fmt...
+}
+goto跳转到指定代码标签；break跳出指定循环；continue指定下一次循环：仅在for循环内使用
+应用例子：
+OuterLoop:
+    for i:=0;i<2;i++{
+        for j:=0;j<5;j++{
+            switch j{
+                case 1:
+                    fmt.Println("good")
+                    break OuterLoop
+                case 2:
+                    fmt.Println("bad")
+                    continue OuterLoop  
+                case 3:
+                    fmt.Println("yes")
+                    goto CodeHere       //goto代码块
+            }
+        }
+    }
+    CodeHere:
+        fmt.Println("no")
+}
