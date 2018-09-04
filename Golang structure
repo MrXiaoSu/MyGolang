@@ -1,0 +1,192 @@
+定义
+{
+type	类型名  struct{
+字段1	类型
+字段2	类型
+。。。
+}
+}
+实例化结构构体
+{
+Go语言中的类型可以被实例化，使用new或‘&’构造的实例，它们的类型是指针类型。
+p1：= &Point{}
+p2：=new（Point）
+
+基本方式：
+type Student struct{
+    num int
+    name string
+    age int
+}
+实例化：
+1、var stu Student			//基本实例化	指针		返回实例类型为结构体类型
+stu ：= Student{}		 //基本实例化	指针		返回实例类型为结构体类型
+2、stu：= new（Student）	//new实例化	指针		返回实例类型为结构体指针类型
+3、stu：=&Student{}		//&Student{}实例化	指针 返回实例类型为结构体指针类型
+赋值：
+stu.name = "xiaosu"
+stu.num = 001
+stu.age = 18
+例：
+    var stu1 Student			//返回结构体类型
+    stu2 := Student{}			//结构体
+    stu3 := new(Student)		//结构体指针
+    stu4 := &Student{}		//结构体指针
+    stu5 := &Student{8,"xiaosu",18}		//结构物指针
+    stu6 := &Student{num:005}			//结构体指针	可以在实例化同时赋值
+    
+    stu1.num = 000
+    fmt.Printf("%v %d \n",stu1,stu1)
+    
+    stu2.num = 001
+    fmt.Printf("%v %d \n",stu2,stu2)
+    
+    stu3.name = "xiaowang"
+    fmt.Printf("%v %d \n",stu3,stu3)
+    
+    stu4.age = 20
+    fmt.Printf("%v %d \n",stu4,stu4)
+    
+    fmt.Printf("%v %d \n",stu5,stu5)
+    
+    stu6.name="xiaoli"
+    stu6.age = 19
+    fmt.Printf("%v %d \n",stu6,stu6)
+    
+}
+
+type Student struct{
+    num int
+    name string
+    age int
+}
+}
+--------------------------------------------------------------------------------
+结构体初始化
+{
+键值对初始化结构体：
+    stu7 := Student{
+        num : 111,	//字段对应字段值
+        name : "su",
+        age : 21,
+    }
+关联：
+    pl := &People{
+        name : "爷爷",
+        child : &People{        //如何解释
+            name : "爸爸",
+            child : &People{    //没问题
+                name : "儿子",
+            },
+        },
+    }
+匿名结构体初始化：
+    anonymity := struct{		//返回值是结构体类型
+        id int
+        name string
+        age int
+    }{
+        666,
+        "bird",
+        33,
+    }
+}
+--------------------------------------------------------------------------------
+构造函数
+{	
+模拟构造函数重载进行初始化：
+func Id_initialize(num int) *Student{
+    return &Student{
+        num : 123,
+    }
+}
+func Name_initialize(name string) *Student{
+    return &Student{
+        name : "magic",
+    }
+}
+func Age_initialize(age int) *Student{
+    return &Student{
+        age : 25,
+    }
+}
+main：
+    stu9 := &Student{}
+    Id_initialize(stu9.num)
+    Name_initialize(stu9.name)
+    Age_initialize(stu9.age)
+模拟父级构造调用：
+
+}
+--------------------------------------------------------------------------------
+方法
+{
+接收器：
+type Bag struct{
+    item []int      //指针型 
+}
+//(b *Bag)函数中结构体指针接收器，在函数体中可自由对结构体进行操作
+func (b *Bag) Insert(item_id int){
+    b.item = append(b.item,item_id)
+}
+main：
+    b := new(Bag)
+    b.Insert(100)
+    fmt.Println(b)
+指针类型、非指针类型接收器：
+type testint int  		//声明tsetint为int型
+func (p *testint) testdouble() int {  
+    *p = *p * 2         //根据地址修改内存中变量
+	fmt.Println("testdouble p = ", *p)  
+    return 0  
+}   
+func (p testint) testsquare() int {  
+    p = p * p           //值运算，和地址无关
+    fmt.Println("square p = ", p)  
+    return 0  
+}  
+func main() {  
+    var i testint = 2  
+    i.testdouble()  
+    fmt.Println("i = ", i)  
+    i.testsquare()  
+    fmt.Println("i = ", i)  
+}  
+类型添加方法：
+
+}
+--------------------------------------------------------------------------------
+类型内嵌和结构体内嵌
+{
+内嵌：
+func main(){
+    var ic InheritColor
+    ic.bs.R = 1
+    ic.bs.G = 1
+    ic.bs.B = 0 
+    
+    ic.Alpha = 1
+    
+    fmt.Printf("%+v",ic)
+}
+//基结构体
+type BasicColor struct{
+    R,G,B float32
+}
+//完整结构体
+type InheritColor struct{
+    bs BasicColor   //基本类型作为成员
+    /*基结构体直接嵌入完整结构体
+    BasicColor
+    
+    调用时，可直接使用完整结构体对象调用基结构体对象
+    结构体之间的合并：同一个包下面的结构体之间可以直接使用    
+    ic.R = 1
+    */
+    Alpha float32   //透明度
+}
+结构体之间嵌套初始化：
+车，轮子，引擎
+车子实例，car结构体中嵌入轮子，引擎，在车子实例的内部进行实例并初始化
+成员名字冲突：若不同结构体同时嵌入第三方结构体，未避免访问混乱，需要表明访问结构体名称。
+}
