@@ -1,0 +1,208 @@
+数组
+{
+数组声明：
+var student [3] string		//定义
+student[0] = "xiaosu"
+student[1] = "xiaowang"
+student[2] = "xiaoli"
+初始化：
+var  student = [ ] string{"xiaosu","xiaowang","xiaoli"}
+遍历数组：
+func main(){
+    var  student = [] string{"xiaosu","xiaowang","xiaoli"}
+    //for遍历
+    for i:=0;i<len(student);i++{
+        fmt.Println(student[i])
+    }
+    //for range 遍历
+    for _,value := range student{
+        fmt.Println(value)
+    }
+}
+}
+--------------------------------------------------------------------------------
+切片
+{
+基础知识：
+-其本身并不是数组，silce指向底层的数组
+-作为变长数组的替代方案，可以关联底层数组的局部与全部
+-为引用类型
+-可以直接创建或从底层数组获取生成
+-使用len（）获取元素个数，cap（）获取容量
+-若果多个silce指向相同底层数组，其中一个的值改变会影响全部
+声明：（和数组声明相似）
+var slice_name [ ]  T
+var strList [ ] string				//声明字符串切片
+var numList [ ] int				//声明整型切片
+var numListEmpty = [ ] int { }		//声明一个空切片
+构造切片：
+make（[ ]T,size,cap）	//T切片类型，size分配元素个数，cap切片容量
+a：= make（[ ]int,2）	//默认容量为元素个数
+b：= make（[ ]int,2,10）//元素个数2，容量10。切片的容量根据根据元素个数成倍增长
+a[0]
+a[1]
+a[2]
+fmt.Println（a，b）
+fmt.Println（len（a），len（b））
+
+输出：[0,0]	[0,0]
+append（）函数为切片添加元素：
+append（数组名，元素1，元素2，元素3……）//元素的添加个数可以是一个也可以是多个
+var car [ ] string	//也可声明	car := make([ ]int，0,10)
+car = append（car,"hello"）//单个添加
+car = append（car,"world","and","go","!"）
+切片元素复制：
+copy（aim_silce，source_slice  [ ] T） int    //aim_silce为复制目标，source_slice切片来源
+
+}
+
+数组与切片的区别
+{
+1、数组需要指定大小，系统可自动推算出大小，一旦声明大小不可改变；
+切片不需要指定大小，切片容量可更改
+2、GoLang中数组是值传递，切片是引用传递
+（1）source_data := make([]int, 20)
+for i := 0; i < 10; i++ {
+source_data[i] = i
+}
+//append 直接拷贝切片
+fmt.Println(source_data)
+aim_data := make([]int, 0)
+aim_data = append(aim_data, source_data...)
+
+（2）io引用copy方法实现复制。
+3、切片删除
+seq := []string{"a", "b", "c", "d", "e"}		// 指定删除位置
+index := 2							// 查看删除位置之前的元素和之后的元素,并依此将删除元素之前的元素按序打印，删除元素之后的元素按序打印
+fmt.Println(seq[:index], seq[index+1:])	// 删除指定元素之后，删除点前后元素连接起来，将剩余元素按序打印
+seq = append(seq[:index], seq[index+1:]...)
+fmt.Println(seq)
+}
+
+
+--------------------------------------------------------------------------------
+map
+{
+概念：建立事物关联的容器。map使用散列表（hash）实现
+映射关系容器使用两种算法L：散列表和平衡树
+散列表：可看成是一个数组（又称‘桶’），数组的每一个元素是一个列表。
+根据散列函数获得每个元素的特征值，将特征值作为映射的键。
+若特征值重复，表示元素发生碰撞并碰撞的元素放在同一个特征值的列表中进行保存。			
+散列表查找的时间复杂度为O（1），和数组一致；最坏情况为O（n）。
+散列表需要尽量避免元素发生碰撞以提高查找效率，这样就对桶进行扩容，每次扩容都需要将元素重新放入到桶中。
+平衡树：类似于油浮子关系的数据树，每个元素放入树时，都要与一些节点进行比较。
+平衡树的时间复杂度为O（log n）。
+定义：
+1、map_demo := make(map[string] int)	//键类型是string，值类型是int
+2、
+var map_demo map[string] int			//先声明
+map_demo = make(map[string] int)	//后定义
+map添加数据：
+遍历map的“键值对”：使用for range
+map_demo := make(map[string] int )	//创建map实例
+map_demo["route"] = 1    //将	“键值对”	写到map中
+map_demo["black"] = 2
+map_demo["red"] = 3
+    
+//循环遍历map
+for key,value := range scene{
+fmt.Println(key,value)
+}   
+若只遍历值：
+for  _,vakue := range scene{}
+若只遍历键值：
+for  key,_：= range scene{}
+删除键值对：	 delete(map实例，键值)
+delete(scene, "xiaosu")
+清除map中所有值：Go语言没有为map提供任何清空所有元素的函数、方法。
+ 	清除map的方法就是重新make一个map，go有用强大的gc机制。
+}
+map并发——sync.Map
+{
+能够在并发环境中使用map——sync.Map
+例1和例2的对比：
+package main
+
+func main() {
+    scene := make(map[int]int)
+    go func() {
+        for {
+            scene[1] = 1
+        }
+    }()
+
+    go func() {
+        for {
+            _ = scene[1]
+        }
+    }()
+
+    for {
+
+    }
+}
+输出错误：fatal error: concurrent map read and map write
+原因：并发的map读写，两个并发函数不断地对map进行状态竞争，正常情况下解决办法是加锁，但效率低下。
+
+Go1.9版本提供sync.Map来处理。
+sync.Map特性：
+无需初始化，直接声明
+sync.Map不能使用map方式进行取值和设置等操作，而是使用sync.Map的方法进行调用。Store表示存储，Load表示获取，Delete表示删除。
+使用range配合一个回调函数进行遍历操作，通过回调函数的返回内部遍历出来的值
+package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    //声明 scene,类型是sync.Map
+    var scene sync.Map
+    //保存值到sync.Map中
+    scene.Store("xiaosu", 111)
+
+    scene.Store("xiaoli", 222)
+
+    scene.Store("xiaohu", 333)
+    //查找对应的值
+    fmt.Println(scene.Load("xiaosu"))
+    //删除键值对
+    scene.Delete("xiaosu")
+    //Range()方法可以遍历sync.Map，需要提供一个匿名函数，参数是key，value，类型是interface{}
+    //Range()每次遍历一个一个元素，都会调用匿名函数将值返回
+    scene.Range(func(key, value interface{}) bool {
+        fmt.Println("iterate:", key, value)
+        return true
+    })
+}
+输出：
+100	true
+iterate：xiaoli	222
+iterate：xiaohu 333	
+}
+--------------------------------------------------------------------------------
+list——快速增删的非连续空间容器
+{	
+定义：非连续存储的容器，由多个节点组成，节点通过变量记录彼此之间的联系。
+声明：	var lt list.List
+初始化：
+lt ：= list.new()			//声明实例，初始化
+列表插入元素：
+lt ：= list.New()
+lt.PushBack("fist") //添加元素到表尾
+lt.PushFront(21)    //添加元素到表头
+
+element := lt.PushBack("fist")      //声明element保存元素句柄
+lt.InsertAfter("xiaosu",element)    //在句柄之后添加元素
+lt.InsertBefore("xiaowang",element) //在句柄之前添加元素
+lt.Remove(element)                  //删除句柄
+遍历列表：
+/*配合Front()函数获取表头元素；
+遍历不为空继续遍历；
+每次遍历调用Next()函数。
+使用遍历返回*list.Element的Value成员取得放入列表的原值*/
+for i:=lt.Front();i!=nil;i=i.Next(){
+    fmt.Println(i.Value)  
+}
+}	
