@@ -1,0 +1,190 @@
+变量
+{	声明：
+var a int               //声明整型变量
+var b string            //声明字符串类型变量
+var c []float32         //声明32位浮点切片型变量
+var d func() bool       //声明一个返回值为bool类型的函数变量
+var e struct{           //声明一个结构体类型变量，结构体中有整型x字段
+    x int 
+}
+//批量声明
+var {
+    a int               
+    b string            
+    c []float32        
+    d func() bool       
+    e struct{           
+    x int 
+    }
+}
+变量初始化：
+var a int = 100
+var b = 100             //编译器可以根据值推导出变量类型
+var c = a*b             //go语言默认变量类型为float64
+短变量的声明与初始化：
+a ：= 100           //声明+赋值。无需指定变量类型，使用只能在函数中。
+多个变量同时赋值：节省内存消耗，减少中间变量。
+{
+    var a int = 100
+    var b int = 100
+    a = a^b
+    b = b^a
+    a = a^b 
+}
+ 	//go语言交换强大
+{
+    var a int = 100
+    var b int = 100
+    a , b = b , a 
+}
+匿名变量：
+{
+    func getdata()(int,int){
+    return 100,200
+    }
+    a,_ = getdata()
+    _,b = getdata()
+}
+}
+--------------------------------------------------------------------------------
+数据类型
+{	
+整型：
+int8，int16，int32，int64
+int8对应byte，int16对应short，int64对应long
+uint8，uint16，uint32，uint64
+浮点型：
+float32	
+float64	//默认类型
+布尔型：
+bool		值只有false（默认值），true
+go语言中不允许将整型强制转换为布尔型
+字符串：go语言中字符串以原生数据类型出现。
+str := "hello world"
+ch := "你好"
+转义字符
+{
+    \r      回车符（返回行首）
+    \n      换行符（直接跳到下一行的同列位置）
+    \t      制表符
+    \'      单引号
+    \"      双引号
+    \\      反斜杠
+}
+定义多行字符串
+{
+    const str = 
+   `111		//反引号，1键左边
+   222
+   333
+   \r\n
+   `
+   fmt.Printf(str)
+}
+
+字符：
+一种是unit8类型，或者叫byte型，代表ASCII的一个字符
+另一种是rune类型。处理中文、日文等。rune类型实际上是int32
+{
+    var b rune = '你'
+    fmt.Printf("%c,%d %T\n",b,b,b)	//输出字符，整型输出，数据类型
+}
+}
+数据类型转换
+例子：
+var a int32 = 100
+var b float64 = float64(a)
+--------------------------------------------------------------------------------
+指针
+{
+指针地址与指针类型：
+ptr：= &v；	
+v代表被去地址的变量，&v表示去v的内存地址
+ptr作为地址接收变量，数据类型是	*T	称为T的指针类型
+func main(){
+    var a int = 1
+    var b string = "hello"
+    fmt.Printf("%p %p",&a,&b)   //	%p：输出变量取地址后的指针值
+}
+从指针获取指针指向的值：
+func main(){
+    var a string = "hello"
+    fmt.Println("\n")
+    fmt.Printf("%p\n",&a)   //%p输出变量取地址后的指针值
+    c := &a                 //变量a地址取出
+    value := *c             //变量c值取出
+    fmt.Printf("%T\n",c)    //输出c的数据类型
+    fmt.Printf("%p\n",c)    //输出c的地址值
+    fmt.Printf("%s",value)  //输出c的值
+}
+使用指针修改值：
+func main(){
+    x,y := 4,5
+    swap(&x,&y)
+    fmt.Printf("x=%d y=%d",x,y)
+}
+func swap(a,b *int){
+    t := *a
+    *a = *b
+    *b = t    
+}
+new（）函数创建指针：
+str := new(string)
+*str = "你好"
+fmt.Printf(*str)
+}
+--------------------------------------------------------------------------------
+字符串应用
+{
+计算字符串长度：len（a）
+遍历字符串：
+func main(){
+    //ASCII字符串遍历直接使用下标
+    str1 := "你好 golang"
+    //遍历任意一个字符串
+    for i:=0;i<len(str1);i++{
+        fmt.Printf("ASCII:%c %d\n",str1[i],str1[i])
+    }
+    
+    //Unicode字符串遍历用for range
+    str2 := "你好 golang"
+    //使用Unicode字符串遍历
+    for _,s:=range str2{
+        fmt.Printf("Unicode:%c %d\n",s,s)
+    }
+}
+}
+--------------------------------------------------------------------------------
+常量
+{	
+例子：const pi float32 = 3.14 
+群体定义：
+const{
+    pi = 3.14
+    a = 1.11
+    ……
+}
+枚举：
+type Weapon int         //定义一个Weapon为int类型
+/*  //强弱类型之间无法赋值
+    var a int = 0           //int是强类型    
+    var b Weapon        //Weapon是int的子类型，弱类型
+    b = a       //错误    强类型无法赋值给弱类型
+*/
+const{
+    a Weapon = iota    //iota初始值为0，自增1
+    b
+    c
+    d
+}
+}
+--------------------------------------------------------------------------------
+类型别名
+{
+区分类型别名与类型定义：
+type NewInt int     //将NewInt定义为int型
+type IntAlias = int //将int取一个别名 IntAlias
+非本地类型不能定义方法：
+import "time"
+type MyDuration = time.Duration     //不能定义非本地类型
+}
